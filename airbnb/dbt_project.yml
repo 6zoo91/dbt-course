@@ -32,5 +32,8 @@ clean-targets:         # directories to be removed by `dbt clean`
 models:
   airbnb:
     # Config indicated by + and applies to all files under models/example/
-    example:
-    #  +materialized: view -- 강의에선 제외
+    +materialized: view ## default가 view로 매터리얼라이제이션
+    dim : 
+      +materialized: table ## dim 하위 모델은 테이블로 매터리얼라이제이션
+    src :
+      +materialized: ephemeral ## src 하위 모델은 ephemeral로 매터리얼라이제이션

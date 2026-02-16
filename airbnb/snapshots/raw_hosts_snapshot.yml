@@ -1,0 +1,8 @@
+snapshots : 
+    - name : scd_raw_hosts
+      relation : source('airbnb', 'hosts')
+      config : 
+        unique_key : id
+        updated_at : updated_at
+        strategy : timestamp # 3가지 전략 : timestamp, check, log 중 한개
+        hard_delete : invalidate # soft delete 전략 : invalidate, no_action 중 한개
