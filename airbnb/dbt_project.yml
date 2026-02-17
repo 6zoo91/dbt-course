@@ -17,7 +17,7 @@ test-paths: ["tests"]
 seed-paths: ["seeds"]
 macro-paths: ["macros"]
 snapshot-paths: ["snapshots"]
-
+asset-paths: ["assets"] # asset 폴더 추가(이미지 등)
 clean-targets:         # directories to be removed by `dbt clean`
   - "target"
   - "dbt_packages"
@@ -37,3 +37,7 @@ models:
       +materialized: table ## dim 하위 모델은 테이블로 매터리얼라이제이션
     src :
       +materialized: ephemeral ## src 하위 모델은 ephemeral로 매터리얼라이제이션
+
+data_tests:
+  +store_failures : true # 테스트 실패 시 실패한 레코드를 저장하는 설정. 실패한 레코드는 target/ 디렉토리에 저장됨. 이 설정을 통해 어떤 데이터가 테스트를 통과하지 못했는지 분석할 수 있음.
+  +schema: _test_failures # 실패한 레코드를 저장할 스키마 이름. 기본값은 _dbt_test_failures. 이 설정을 통해 실패한 레코드를 별도의 스키마에 저장하여 관리할 수 있음.

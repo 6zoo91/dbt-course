@@ -16,6 +16,7 @@ SELECT
         'Anonymous'
     ) AS host_name,
     is_superhost,
+    -- IFF(is_superhost = 't',TRUE,FALSE) AS is_superhost, -- test
     created_at,
     updated_at
 FROM

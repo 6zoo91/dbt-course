@@ -1,0 +1,66 @@
+# schema.yml은 DBT 컨벤션임. 
+# 테스트 실행 방법 : dbt test, dbt test -x # -x는 첫번째 fail에서 멈춤
+
+models:
+  - name : dim_listings_cleansed
+    description: Cleansed table which contains Airbnb listings.
+    data_tests : 
+      - minimum_row_count:
+          arguments:
+            min_row_count: 1000
+          # severity : warn # schema.yml에서 명시적으로 표시하지 않고, tests/generic 하위에서 config로 default severity를 설정할 수도 있음. 
+    columns:
+     - name : listing_id
+       description: Primary key for the listing
+       data_tests: # test라고 써도 됨. 두가지 테스트 진행(generic)
+          - unique
+          - not_null 
+     - name: host_id
+       description: The host's id. References the host table.
+       data_tests:
+         - not_null
+         - relationships:
+             arguments:
+               to: ref('dim_hosts_cleansed')
+               field: host_id
+     - name: room_type
+       description: Type of the apartment / room
+       data_tests:
+         - accepted_values:
+             arguments:
+               values: ['Entire home/apt',
+                        'Private room',
+                        'Shared room',
+                        'Hotel room'] ## 테스트용
+     - name : minimum_nights
+      #  description: Minimum number of nights for the listing
+       description: '{{ doc("dim_listing_cleansed__minimum_nights") }}'
+       data_tests:
+         - positive_values # tests/generic 경로 하위
+
+  # contract test : 모델의 스키마가 변경되지 않았는지 확인하는 테스트. 
+  # contract test를 통과하지 못하면, 모델의 스키마가 변경된 것. contract test는 모델의 스키마가 변경되었는지 확인하는 테스트로, 모델의 스키마가 변경되면 contract test가 실패하게 됩니다. contract test는 모델의 스키마가 변경되었는지 확인하는 테스트로, 모델의 스키마가 변경되면 contract test가 실패하게 됩니다. contract test는 모델의 스키마가 변경되었는지 확인하는 테스트로, 모델의 스키마가 변경되면 contract test가 실패하게 됩니다.
+  - name: dim_hosts_cleansed
+    description: Cleansed table which contains Airbnb hosts.
+    config:
+        contract:
+          enforced: true # if model schema 가 contract와 다르면 Fail
+    columns:
+      - name: host_id
+        description: The id of the host. This is the primary key.
+        data_type: integer
+      - name: host_name
+        description: The name of the host.
+        data_type: string
+      - name: is_superhost
+        description: Indicates if the host is a superhost.
+        data_type: string
+        tests:
+          - accepted_values:
+              values: ['t', 'f']
+      - name: updated_at
+        description: The timestamp when the record was last updated.
+        data_type: timestamp
+      - name: created_at
+        description: The timestamp when the record was created.
+        data_type: timestamp
