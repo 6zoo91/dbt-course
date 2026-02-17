@@ -29,8 +29,21 @@ clean-targets:         # directories to be removed by `dbt clean`
 # In this example config, we tell dbt to build all models in the example/
 # directory as views. These settings can be overridden in the individual model
 # files using the `{{ config(...) }}` macro.
+
+# dbt run 시작시, audit_log가 존재하는지 체크하고 생성
+on-run-start:
+  - "CREATE TABLE IF NOT EXISTS {{ target.schema }}.audit_log (
+      model_name STRING,
+      run_timestamp TIMESTAMP
+    )"
+
+
 models:
   airbnb:
+    +grants : 
+      select: ["transform", "reporter"] # role에 대한 권한부여 가능. hook없이... 근데 이러면 yml에 권한이 노출되는 단점이 있음.
+    +post-hook:
+      - "INSERT INTO {{ target.schema }}.audit_log VALUES ('{{ this }}', CURRENT_TIMESTAMP)" # 모델이 빌드된 후, audit_log에 모델 이름과 빌드 시점 기록"
     # Config indicated by + and applies to all files under models/example/
     +materialized: view ## default가 view로 매터리얼라이제이션
     dim : 

@@ -1,0 +1,17 @@
+
+exposures:
+  - name: executive_dashboard
+    label: Executive Dashboard
+    type: dashboard
+    maturity: low
+    url: https://fcd697ac.us1a.app.preset.io/superset/dashboard/8/?native_filters_key=96fNjnBQP7DiBM2l8MP-FEMmLpyGOw8IPsz5Mt-BZDSntsZP55mr7PZ-FJuZNiw5
+    description: Executive Dashboard about Airbnb listings and hosts
+
+
+    depends_on:
+      - ref('dim_listings_w_hosts')
+      - ref('mart_fullmoon_reviews')
+
+    owner:
+      name: Logi
+      email: logi@logi.com
